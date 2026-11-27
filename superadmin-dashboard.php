@@ -615,7 +615,203 @@ try {
                 transform: scale(.75);
                 margin: 0;
             }
-        </style>
+        
+
+/* ================= SERVEASY DOCUMENT ZOOM LIGHTBOX MODAL ================= */
+.doc-zoom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999999;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+    user-select: none;
+}
+.doc-zoom-modal.active {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+.doc-zoom-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 10, 24, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    cursor: zoom-out;
+}
+.doc-zoom-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    pointer-events: none;
+    z-index: 2;
+}
+.doc-zoom-header,
+.doc-zoom-footer {
+    pointer-events: auto;
+}
+.doc-zoom-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.doc-zoom-title-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.doc-zoom-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f8fafc;
+    letter-spacing: 0.3px;
+}
+.doc-zoom-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn-zoom-action {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.18s ease;
+    cursor: pointer;
+}
+.btn-zoom-action:hover {
+    background: rgba(5, 194, 121, 0.22);
+    border-color: #05c279;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+.btn-zoom-download {
+    background: rgba(5, 194, 121, 0.15);
+    border-color: rgba(5, 194, 121, 0.4);
+    color: #05c279;
+}
+.btn-zoom-download:hover {
+    background: #05c279;
+    color: #000;
+}
+.btn-zoom-close {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #f87171;
+    border-radius: 8px;
+    padding: 6px 14px;
+    margin-left: 8px;
+    transition: all 0.18s ease;
+    cursor: pointer;
+}
+.btn-zoom-close:hover {
+    background: #ef4444;
+    color: #ffffff;
+    transform: scale(1.05);
+}
+.doc-zoom-stage {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    cursor: grab;
+    position: relative;
+}
+.doc-zoom-stage.panning {
+    cursor: grabbing;
+}
+.doc-zoom-content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center center;
+    transition: transform 0.08s ease-out;
+    will-change: transform;
+}
+.doc-zoom-content-wrapper img {
+    max-width: 90vw;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+    pointer-events: auto;
+    transition: filter 0.2s ease;
+}
+.doc-zoom-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+/* Document Thumbnail Cards in Verifications Detail */
+.doc-card-container {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+.doc-card-container:hover {
+    border-color: #05c279 !important;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(5, 194, 121, 0.2) !important;
+}
+.doc-preview-wrapper {
+    overflow: hidden;
+    border-radius: 6px;
+    background: #090d16;
+    transition: all 0.25s ease;
+}
+.doc-preview-wrapper:hover .doc-thumb-img {
+    transform: scale(1.08);
+}
+.doc-thumb-img {
+    transition: transform 0.25s ease;
+}
+.doc-hover-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 10, 24, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    backdrop-filter: blur(2px);
+}
+.doc-preview-wrapper:hover .doc-hover-overlay {
+    opacity: 1;
+}
+
+</style>
         <h1 class="list-heading"><i class="fas <?= $c['icon'] ?> mr-2" style="color: var(--se-accent-blue, #007aff);"></i><?= $c['label'] ?></h1>
         <div class="card list-card">
             <div class="card-header d-flex align-items-center"><i class="fas <?= $c['icon'] ?> mr-2" style="opacity: 0.85;"></i><?= $type === 'logo' ? 'Upload Site Logo' : $c['label'] . ' List' ?></div>
@@ -884,6 +1080,26 @@ try {
     }
 
     // ── AJAX HANDLER FOR DETAILS (GET & POST) ─────────────────────────
+    if (!function_exists('resolveDocUrl')) {
+    function resolveDocUrl($path) {
+        if (empty($path)) return '';
+        $path = trim($path);
+        if (preg_match('#^https?://#i', $path) || str_starts_with($path, '//') || str_starts_with($path, 'data:')) {
+            return $path;
+        }
+        $clean = preg_replace('#^(\.\./)+#', '', $path);
+        $clean = preg_replace('#^(\./)+#', '', $clean);
+        $clean = ltrim($clean, '/');
+
+        $httpHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $isLocal = in_array($httpHost, ['localhost', '127.0.0.1', '::1']) || str_starts_with($httpHost, 'localhost:');
+        if (!$isLocal) {
+            return 'https://beige-curlew-610555.hostingersite.com/backend/' . $clean;
+        }
+        return '../../' . $clean;
+    }
+}
+
     if (isset($_REQUEST['ajax_action']) && $_REQUEST['ajax_action'] === 'fetch_detail') {
         $type = $_REQUEST['type'] ?? 'admin';
         if (!in_array($type, ['admin', 'dealer', 'user', 'verification', 'service']))
@@ -1291,71 +1507,116 @@ try {
                         </div>
                     </div>
     
-                    <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
+                                        <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
                         <div class="card-header bg-white border-bottom-0" style="padding: 20px 30px 5px 30px;">
                             <h6 class="m-0 font-weight-bold text-emerald" style="font-size: 1rem;"><i class="fas fa-folder-open mr-2"></i> Uploaded ID Documents</h6>
                         </div>
                         <div class="card-body" style="padding: 10px 30px 30px 30px;">
                             <div class="row">
+                                <!-- ID Front Photo -->
                                 <div class="col-md-3 col-sm-6 text-center mb-3">
-                                    <div class="card p-2 shadow-sm border" style="border-radius: 8px; height: 100%;">
+                                    <div class="card p-2 shadow-sm border doc-card-container" style="border-radius: 8px; height: 100%;">
                                         <div class="small font-weight-bold text-primary mb-2"><i class="fas fa-id-card mr-1"></i> ID Front Photo</div>
-                                        <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="background:#f8f9fc; min-height: 140px; overflow:hidden;">
-                                            <?php if (!empty($ver['id_front_image'])): ?>
-                                                <a href="../../<?= htmlspecialchars($ver['id_front_image']) ?>" target="_blank" title="Click to view full image">
-                                                    <img src="../../<?= htmlspecialchars($ver['id_front_image']) ?>" class="img-fluid" style="max-height: 130px; object-fit: contain;">
-                                                </a>
+                                        <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="background:#090d16; min-height: 140px; overflow:hidden; border-radius:6px;">
+                                            <?php if (!empty($ver['id_front_image'])): 
+                                                $frontUrl = resolveDocUrl($ver['id_front_image']);
+                                                $idTypeTitle = strtoupper(str_replace('_', ' ', $ver['id_type'] ?: 'ID'));
+                                            ?>
+                                                <div class="doc-preview-wrapper position-relative w-100 h-100 d-flex align-items-center justify-content-center"
+                                                     style="cursor: pointer; min-height: 140px;"
+                                                     onclick="openDocZoomModal('<?= htmlspecialchars($frontUrl, ENT_QUOTES) ?>', 'ID Front Photo (<?= htmlspecialchars($idTypeTitle, ENT_QUOTES) ?>)', 'image')"
+                                                     title="Click to zoom / inspect document">
+                                                    <img src="<?= htmlspecialchars($frontUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="ID Front Photo">
+                                                    <div class="doc-hover-overlay">
+                                                        <span class="btn btn-sm btn-primary rounded-pill shadow"><i class="fas fa-search-plus mr-1"></i> Zoom Image</span>
+                                                    </div>
+                                                </div>
                                             <?php else: ?>
                                                 <span class="text-muted small">No photo uploaded</span>
                                             <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- ID Back Photo -->
                                 <div class="col-md-3 col-sm-6 text-center mb-3">
-                                    <div class="card p-2 shadow-sm border" style="border-radius: 8px; height: 100%;">
+                                    <div class="card p-2 shadow-sm border doc-card-container" style="border-radius: 8px; height: 100%;">
                                         <div class="small font-weight-bold text-primary mb-2"><i class="fas fa-id-card mr-1"></i> ID Back Photo</div>
-                                        <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="background:#f8f9fc; min-height: 140px; overflow:hidden;">
-                                            <?php if (!empty($ver['id_back_image'])): ?>
-                                                <a href="../../<?= htmlspecialchars($ver['id_back_image']) ?>" target="_blank" title="Click to view full image">
-                                                    <img src="../../<?= htmlspecialchars($ver['id_back_image']) ?>" class="img-fluid" style="max-height: 130px; object-fit: contain;">
-                                                </a>
+                                        <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="background:#090d16; min-height: 140px; overflow:hidden; border-radius:6px;">
+                                            <?php if (!empty($ver['id_back_image'])): 
+                                                $backUrl = resolveDocUrl($ver['id_back_image']);
+                                                $idTypeTitle = strtoupper(str_replace('_', ' ', $ver['id_type'] ?: 'ID'));
+                                            ?>
+                                                <div class="doc-preview-wrapper position-relative w-100 h-100 d-flex align-items-center justify-content-center"
+                                                     style="cursor: pointer; min-height: 140px;"
+                                                     onclick="openDocZoomModal('<?= htmlspecialchars($backUrl, ENT_QUOTES) ?>', 'ID Back Photo (<?= htmlspecialchars($idTypeTitle, ENT_QUOTES) ?>)', 'image')"
+                                                     title="Click to zoom / inspect document">
+                                                    <img src="<?= htmlspecialchars($backUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="ID Back Photo">
+                                                    <div class="doc-hover-overlay">
+                                                        <span class="btn btn-sm btn-primary rounded-pill shadow"><i class="fas fa-search-plus mr-1"></i> Zoom Image</span>
+                                                    </div>
+                                                </div>
                                             <?php else: ?>
                                                 <span class="text-muted small">No photo uploaded</span>
                                             <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Selfie with ID -->
                                 <div class="col-md-3 col-sm-6 text-center mb-3">
-                                    <div class="card p-2 shadow-sm border" style="border-radius: 8px; height: 100%;">
+                                    <div class="card p-2 shadow-sm border doc-card-container" style="border-radius: 8px; height: 100%;">
                                         <div class="small font-weight-bold text-primary mb-2"><i class="fas fa-camera mr-1"></i> Selfie with ID</div>
-                                        <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="background:#f8f9fc; min-height: 140px; overflow:hidden;">
-                                            <?php if (!empty($ver['selfie_image'])): ?>
-                                                <a href="../../<?= htmlspecialchars($ver['selfie_image']) ?>" target="_blank" title="Click to view full image">
-                                                    <img src="../../<?= htmlspecialchars($ver['selfie_image']) ?>" class="img-fluid" style="max-height: 130px; object-fit: contain;">
-                                                </a>
+                                        <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="background:#090d16; min-height: 140px; overflow:hidden; border-radius:6px;">
+                                            <?php if (!empty($ver['selfie_image'])): 
+                                                $selfieUrl = resolveDocUrl($ver['selfie_image']);
+                                            ?>
+                                                <div class="doc-preview-wrapper position-relative w-100 h-100 d-flex align-items-center justify-content-center"
+                                                     style="cursor: pointer; min-height: 140px;"
+                                                     onclick="openDocZoomModal('<?= htmlspecialchars($selfieUrl, ENT_QUOTES) ?>', 'Selfie with ID / Verification Photo', 'image')"
+                                                     title="Click to zoom / inspect selfie">
+                                                    <img src="<?= htmlspecialchars($selfieUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="Selfie with ID">
+                                                    <div class="doc-hover-overlay">
+                                                        <span class="btn btn-sm btn-primary rounded-pill shadow"><i class="fas fa-search-plus mr-1"></i> Zoom Image</span>
+                                                    </div>
+                                                </div>
                                             <?php else: ?>
                                                 <span class="text-muted small">No photo uploaded</span>
                                             <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Extra Document -->
                                 <div class="col-md-3 col-sm-6 text-center mb-3">
-                                    <div class="card p-2 shadow-sm border" style="border-radius: 8px; height: 100%; border-color: rgba(54, 185, 204, 0.4) !important;">
+                                    <div class="card p-2 shadow-sm border doc-card-container" style="border-radius: 8px; height: 100%; border-color: rgba(54, 185, 204, 0.4) !important;">
                                         <div class="small font-weight-bold text-info mb-2 text-truncate" title="Extra: <?= htmlspecialchars(strtoupper(str_replace('_', ' ', $ver['extra_document_type'] ?: 'Extra ID'))) ?>">
                                             <i class="fas fa-file-invoice mr-1"></i> <?= htmlspecialchars(strtoupper(str_replace('_', ' ', $ver['extra_document_type'] ?: 'Extra ID'))) ?>
                                         </div>
-                                        <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="background:#f0fbff; min-height: 140px; overflow:hidden;">
+                                        <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="background:#090d16; min-height: 140px; overflow:hidden; border-radius:6px;">
                                             <?php if (!empty($ver['extra_document_image'])): 
+                                                $extraUrl = resolveDocUrl($ver['extra_document_image']);
                                                 $ext = strtolower(pathinfo($ver['extra_document_image'], PATHINFO_EXTENSION));
+                                                $isPdf = ($ext === 'pdf');
+                                                $extraTitle = 'Extra Document (' . strtoupper(str_replace('_', ' ', $ver['extra_document_type'] ?: 'Extra ID')) . ')';
                                             ?>
-                                                <a href="../../<?= htmlspecialchars($ver['extra_document_image']) ?>" target="_blank" title="Click to view full document" class="text-center p-2">
-                                                    <?php if ($ext === 'pdf'): ?>
-                                                        <i class="fas fa-file-pdf fa-3x text-danger mb-1"></i>
-                                                        <div class="small font-weight-bold text-danger">Open PDF</div>
+                                                <div class="doc-preview-wrapper position-relative w-100 h-100 d-flex align-items-center justify-content-center p-2"
+                                                     style="cursor: pointer; min-height: 140px;"
+                                                     onclick="openDocZoomModal('<?= htmlspecialchars($extraUrl, ENT_QUOTES) ?>', '<?= htmlspecialchars($extraTitle, ENT_QUOTES) ?>', '<?= $isPdf ? 'pdf' : 'image' ?>')"
+                                                     title="Click to view full document">
+                                                    <?php if ($isPdf): ?>
+                                                        <div class="text-center">
+                                                            <i class="fas fa-file-pdf fa-3x text-danger mb-1"></i>
+                                                            <div class="small font-weight-bold text-danger">Open PDF</div>
+                                                            <span class="badge badge-dark border mt-1" style="font-size:0.7rem;"><i class="fas fa-eye mr-1"></i> View in Popup</span>
+                                                        </div>
                                                     <?php else: ?>
-                                                        <img src="../../<?= htmlspecialchars($ver['extra_document_image']) ?>" class="img-fluid" style="max-height: 130px; object-fit: contain;">
+                                                        <img src="<?= htmlspecialchars($extraUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="Extra Document">
+                                                        <div class="doc-hover-overlay">
+                                                            <span class="btn btn-sm btn-info rounded-pill shadow"><i class="fas fa-search-plus mr-1"></i> Zoom Image</span>
+                                                        </div>
                                                     <?php endif; ?>
-                                                </a>
+                                                </div>
                                             <?php else: ?>
                                                 <span class="text-muted small">No extra document</span>
                                             <?php endif; ?>
@@ -3038,7 +3299,238 @@ if (!in_array($open_tab, $valid_tabs)) {
                 }
             });
         }
-    </script>
+    
+
+        // ================= DOCUMENT ZOOM LIGHTBOX LOGIC =================
+        var currentDocScale = 1.0;
+        var currentDocRotate = 0;
+        var currentPanX = 0;
+        var currentPanY = 0;
+        var isDocPanning = false;
+        var panStartX = 0;
+        var panStartY = 0;
+
+        function updateDocZoomTransform() {
+            var wrapper = document.getElementById('docZoomContentWrapper');
+            var badge = document.getElementById('docZoomScaleBadge');
+            if (!wrapper) return;
+            wrapper.style.transform = 'translate(' + currentPanX + 'px, ' + currentPanY + 'px) scale(' + currentDocScale + ') rotate(' + currentDocRotate + 'deg)';
+            if (badge) {
+                badge.textContent = Math.round(currentDocScale * 100) + '%';
+            }
+        }
+
+        window.openDocZoomModal = function(url, title, type) {
+            if (!url) return;
+            type = type || 'image';
+
+            var modal = document.getElementById('serveasyDocZoomModal');
+            if (!modal) {
+                console.warn('serveasyDocZoomModal element missing, skipping modal');
+                return;
+            }
+
+            var titleEl = document.getElementById('docZoomTitle');
+            var imgEl = document.getElementById('docZoomImage');
+            var iframeEl = document.getElementById('docZoomPdfIframe');
+            var downloadBtn = document.getElementById('docZoomDownloadBtn');
+
+            if (titleEl) titleEl.textContent = title || 'Document Preview';
+            if (downloadBtn) {
+                downloadBtn.href = url;
+                downloadBtn.setAttribute('download', (title || 'document').replace(/[^a-z0-9_-]/gi, '_'));
+            }
+
+            // Reset transforms
+            currentDocScale = 1.0;
+            currentDocRotate = 0;
+            currentPanX = 0;
+            currentPanY = 0;
+            updateDocZoomTransform();
+
+            if (type === 'pdf') {
+                if (imgEl) imgEl.style.display = 'none';
+                if (iframeEl) {
+                    iframeEl.src = url;
+                    iframeEl.style.display = 'block';
+                }
+            } else {
+                if (iframeEl) {
+                    iframeEl.style.display = 'none';
+                    iframeEl.src = '';
+                }
+                if (imgEl) {
+                    imgEl.src = url;
+                    imgEl.style.display = 'block';
+                }
+            }
+
+            modal.style.display = 'flex';
+            setTimeout(function() { modal.classList.add('active'); }, 10);
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeDocZoomModal = function() {
+            var modal = document.getElementById('serveasyDocZoomModal');
+            if (!modal) return;
+            modal.classList.remove('active');
+            setTimeout(function() {
+                modal.style.display = 'none';
+                var imgEl = document.getElementById('docZoomImage');
+                var iframeEl = document.getElementById('docZoomPdfIframe');
+                if (imgEl) imgEl.src = '';
+                if (iframeEl) iframeEl.src = '';
+                document.body.style.overflow = '';
+            }, 250);
+        };
+
+        window.docZoomAction = function(action) {
+            if (action === 'in') {
+                currentDocScale = Math.min(5.0, currentDocScale + 0.25);
+            } else if (action === 'out') {
+                currentDocScale = Math.max(0.5, currentDocScale - 0.25);
+            } else if (action === 'rotate') {
+                currentDocRotate = (currentDocRotate + 90) % 360;
+            } else if (action === 'reset') {
+                currentDocScale = 1.0;
+                currentDocRotate = 0;
+                currentPanX = 0;
+                currentPanY = 0;
+            }
+            updateDocZoomTransform();
+        };
+
+        function attachDocZoomListeners() {
+            var stage = document.getElementById('docZoomStage');
+            if (!stage) return;
+
+            // Mouse wheel to zoom
+            stage.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                if (e.deltaY < 0) {
+                    docZoomAction('in');
+                } else {
+                    docZoomAction('out');
+                }
+            }, { passive: false });
+
+            // Double click to toggle 2x zoom
+            stage.addEventListener('dblclick', function(e) {
+                if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+                if (currentDocScale === 1.0) {
+                    currentDocScale = 2.0;
+                } else {
+                    currentDocScale = 1.0;
+                    currentPanX = 0;
+                    currentPanY = 0;
+                }
+                updateDocZoomTransform();
+            });
+
+            // Mouse drag to pan
+            stage.addEventListener('mousedown', function(e) {
+                if (e.button !== 0) return;
+                if (e.target.tagName === 'BUTTON' || e.target.closest('button') || e.target.tagName === 'A') return;
+                isDocPanning = true;
+                panStartX = e.clientX - currentPanX;
+                panStartY = e.clientY - currentPanY;
+                stage.classList.add('panning');
+            });
+
+            window.addEventListener('mousemove', function(e) {
+                if (!isDocPanning) return;
+                currentPanX = e.clientX - panStartX;
+                currentPanY = e.clientY - panStartY;
+                updateDocZoomTransform();
+            });
+
+            window.addEventListener('mouseup', function() {
+                if (isDocPanning) {
+                    isDocPanning = false;
+                    if (stage) stage.classList.remove('panning');
+                }
+            });
+
+            // Keyboard shortcuts
+            window.addEventListener('keydown', function(e) {
+                var modal = document.getElementById('serveasyDocZoomModal');
+                if (!modal || !modal.classList.contains('active')) return;
+                if (e.key === 'Escape') {
+                    closeDocZoomModal();
+                } else if (e.key === '+' || e.key === '=') {
+                    docZoomAction('in');
+                } else if (e.key === '-' || e.key === '_') {
+                    docZoomAction('out');
+                } else if (e.key === 'r' || e.key === 'R') {
+                    docZoomAction('rotate');
+                } else if (e.key === '0') {
+                    docZoomAction('reset');
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            attachDocZoomListeners();
+        });
+
+</script>
+
+
+<!-- ServEasy Document Zoom Lightbox Modal -->
+<div id="serveasyDocZoomModal" class="doc-zoom-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="doc-zoom-backdrop" onclick="closeDocZoomModal()"></div>
+    
+    <div class="doc-zoom-container">
+        <!-- Top Toolbar Header -->
+        <div class="doc-zoom-header">
+            <div class="doc-zoom-title-area d-flex align-items-center">
+                <span class="doc-zoom-icon mr-2"><i class="fas fa-shield-alt text-emerald"></i></span>
+                <span id="docZoomTitle" class="doc-zoom-title font-weight-bold text-white">Document Preview</span>
+                <span id="docZoomScaleBadge" class="badge badge-dark ml-3 px-2 py-1" style="font-size:0.75rem; background:rgba(255,255,255,0.15);">100%</span>
+            </div>
+            
+            <div class="doc-zoom-actions d-flex align-items-center" style="gap: 8px;">
+                <button type="button" class="btn btn-sm btn-zoom-action" title="Zoom In (Scroll up or click)" onclick="docZoomAction('in')">
+                    <i class="fas fa-search-plus"></i><span class="d-none d-md-inline ml-1">Zoom In</span>
+                </button>
+                <button type="button" class="btn btn-sm btn-zoom-action" title="Zoom Out (Scroll down)" onclick="docZoomAction('out')">
+                    <i class="fas fa-search-minus"></i><span class="d-none d-md-inline ml-1">Zoom Out</span>
+                </button>
+                <button type="button" class="btn btn-sm btn-zoom-action" title="Rotate 90° Clockwise" onclick="docZoomAction('rotate')">
+                    <i class="fas fa-redo"></i><span class="d-none d-md-inline ml-1">Rotate</span>
+                </button>
+                <button type="button" class="btn btn-sm btn-zoom-action" title="Reset View" onclick="docZoomAction('reset')">
+                    <i class="fas fa-sync-alt"></i><span class="d-none d-md-inline ml-1">Reset</span>
+                </button>
+                <a id="docZoomDownloadBtn" href="#" target="_blank" download class="btn btn-sm btn-zoom-action btn-zoom-download" title="Open or Download Original">
+                    <i class="fas fa-download"></i><span class="d-none d-md-inline ml-1">Download</span>
+                </a>
+                <button type="button" class="btn btn-sm btn-zoom-close" title="Close (Esc)" onclick="closeDocZoomModal()">
+                    <i class="fas fa-times fa-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Viewing Stage -->
+        <div id="docZoomStage" class="doc-zoom-stage">
+            <div id="docZoomContentWrapper" class="doc-zoom-content-wrapper">
+                <img id="docZoomImage" src="" alt="Document Zoomed" style="display: none;" draggable="false" />
+                <iframe id="docZoomPdfIframe" src="" style="display: none; width: 90vw; height: 80vh; border: none; border-radius: 8px; background: #fff;"></iframe>
+            </div>
+        </div>
+
+        <!-- Bottom Status / Hint Bar -->
+        <div class="doc-zoom-footer">
+            <span><i class="fas fa-mouse mr-1"></i> Scroll to Zoom</span>
+            <span class="mx-2">•</span>
+            <span><i class="fas fa-hand-paper mr-1"></i> Click & Drag to Pan</span>
+            <span class="mx-2">•</span>
+            <span>Double-Click to Toggle 2x</span>
+            <span class="mx-2">•</span>
+            <span>Press <kbd style="background: rgba(255,255,255,0.2); color:#fff; padding:1px 5px; border-radius:3px;">ESC</kbd> to Close</span>
+        </div>
+    </div>
+</div>
 
 </body>
 
