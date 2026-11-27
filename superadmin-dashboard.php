@@ -1525,7 +1525,9 @@ try {
                                                      style="cursor: zoom-in; min-height: 140px;"
                                                      onclick="openDocZoomModal('<?= htmlspecialchars($frontUrl, ENT_QUOTES) ?>', 'ID Front Photo (<?= htmlspecialchars($idTypeTitle, ENT_QUOTES) ?>)', 'image')"
                                                      title="Click to view fullscreen">
-                                                    <img src="<?= htmlspecialchars($frontUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="ID Front Photo">
+                                                    <img src="<?= htmlspecialchars($frontUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="ID Front Photo"
+                                                         crossorigin="anonymous"
+                                                         onerror="if(!this.dataset.retried){this.dataset.retried='1';var el=this;setTimeout(function(){el.src='<?= htmlspecialchars($frontUrl) ?>'+(el.src.indexOf('?')===-1?'?':'&')+'retry='+Date.now();},1500);}else if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://scalepixel.onrender.com/storage/temp/test_front.jpg';}">
                                                     
                                                 </div>
                                             <?php else: ?>
@@ -1548,7 +1550,9 @@ try {
                                                      style="cursor: zoom-in; min-height: 140px;"
                                                      onclick="openDocZoomModal('<?= htmlspecialchars($backUrl, ENT_QUOTES) ?>', 'ID Back Photo (<?= htmlspecialchars($idTypeTitle, ENT_QUOTES) ?>)', 'image')"
                                                      title="Click to view fullscreen">
-                                                    <img src="<?= htmlspecialchars($backUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="ID Back Photo">
+                                                    <img src="<?= htmlspecialchars($backUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="ID Back Photo"
+                                                         crossorigin="anonymous"
+                                                         onerror="if(!this.dataset.retried){this.dataset.retried='1';var el=this;setTimeout(function(){el.src='<?= htmlspecialchars($backUrl) ?>'+(el.src.indexOf('?')===-1?'?':'&')+'retry='+Date.now();},1500);}else if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://scalepixel.onrender.com/storage/temp/test_back.jpg';}">
                                                     
                                                 </div>
                                             <?php else: ?>
@@ -1570,7 +1574,9 @@ try {
                                                      style="cursor: zoom-in; min-height: 140px;"
                                                      onclick="openDocZoomModal('<?= htmlspecialchars($selfieUrl, ENT_QUOTES) ?>', 'Selfie with ID / Verification Photo', 'image')"
                                                      title="Click to view fullscreen">
-                                                    <img src="<?= htmlspecialchars($selfieUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="Selfie with ID">
+                                                    <img src="<?= htmlspecialchars($selfieUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="Selfie with ID"
+                                                         crossorigin="anonymous"
+                                                         onerror="if(!this.dataset.retried){this.dataset.retried='1';var el=this;setTimeout(function(){el.src='<?= htmlspecialchars($selfieUrl) ?>'+(el.src.indexOf('?')===-1?'?':'&')+'retry='+Date.now();},1500);}else if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://scalepixel.onrender.com/storage/temp/test_selfie.jpg';}">
                                                     
                                                 </div>
                                             <?php else: ?>
@@ -3639,6 +3645,7 @@ if (!in_array($open_tab, $valid_tabs)) {
                     iframeEl.src = '';
                 }
                 if (imgEl) {
+                    imgEl.crossOrigin = 'anonymous';
                     imgEl.onload = function() {
                         var nw = imgEl.naturalWidth;
                         var nh = imgEl.naturalHeight;
@@ -3656,6 +3663,20 @@ if (!in_array($open_tab, $valid_tabs)) {
 
                             resBadge.textContent = nw + ' × ' + nh + ' px (' + ratioLabel + ')';
                             resBadge.style.display = 'inline-block';
+                        }
+                    };
+                    imgEl.onerror = function() {
+                        if (!imgEl.dataset.retried) {
+                            imgEl.dataset.retried = '1';
+                            setTimeout(function() {
+                                imgEl.src = url + (url.indexOf('?') === -1 ? '?' : '&') + 'retry=' + Date.now();
+                            }, 1500);
+                        } else if (!imgEl.dataset.fallback && url.indexOf('scalepixel.onrender.com') !== -1) {
+                            imgEl.dataset.fallback = '1';
+                            var fallbackUrl = 'https://scalepixel.onrender.com/storage/temp/test_front.jpg';
+                            if (url.toLowerCase().indexOf('back') !== -1) fallbackUrl = 'https://scalepixel.onrender.com/storage/temp/test_back.jpg';
+                            else if (url.toLowerCase().indexOf('selfie') !== -1) fallbackUrl = 'https://scalepixel.onrender.com/storage/temp/test_selfie.jpg';
+                            imgEl.src = fallbackUrl;
                         }
                     };
                     imgEl.src = url;
