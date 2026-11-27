@@ -3479,6 +3479,8 @@ if (!in_array($open_tab, $valid_tabs)) {
         var isDocPanning = false;
         var panStartX = 0;
         var panStartY = 0;
+        var currentDocUrl = '';
+        var currentDocTitle = '';
 
         function updateDocZoomTransform() {
             var wrapper = document.getElementById('docZoomContentWrapper');
@@ -3490,9 +3492,81 @@ if (!in_array($open_tab, $valid_tabs)) {
             }
         }
 
+        window.triggerDirectDownload = function() {
+            if (!currentDocUrl) return;
+            var btn = document.getElementById('docZoomDownloadBtn');
+            var originalHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span class="d-none d-md-inline ml-1">Saving...</span>';
+                btn.disabled = true;
+            }
+
+            var cleanTitle = (currentDocTitle || 'document').replace(/[^a-zA-Z0-9_-]/g, '_');
+            var ext = currentDocUrl.split('.').pop().split('?')[0].toLowerCase();
+            if (!['jpg', 'jpeg', 'png', 'webp', 'avif', 'pdf'].includes(ext)) {
+                ext = 'jpg';
+            }
+            if (ext === 'jpeg') ext = 'jpg';
+            var downloadFileName = cleanTitle + '.' + ext;
+
+            function restoreBtn() {
+                if (btn) {
+                    btn.innerHTML = originalHtml;
+                    btn.disabled = false;
+                }
+            }
+
+            // Strategy 1: Direct in-memory Blob fetch (Zero redirect, 100% direct file download)
+            fetch(currentDocUrl, { mode: 'cors' })
+                .then(function(res) {
+                    if (!res.ok) throw new Error('Fetch failed with status ' + res.status);
+                    return res.blob();
+                })
+                .then(function(blob) {
+                    var blobUrl = window.URL.createObjectURL(blob);
+                    var link = document.createElement('a');
+                    link.style.display = 'none';
+                    link.href = blobUrl;
+                    link.download = downloadFileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    setTimeout(function() {
+                        window.URL.revokeObjectURL(blobUrl);
+                        document.body.removeChild(link);
+                        restoreBtn();
+                    }, 500);
+                })
+                .catch(function(err) {
+                    console.warn('[DocZoom] Direct blob fetch error, falling back to ScalePixel download endpoint:', err);
+
+                    // Strategy 2: ScalePixel Content-Disposition attachment endpoint via hidden iframe (No page redirect)
+                    var downloadEndpoint = '';
+                    if (currentDocUrl.includes('scalepixel.onrender.com/storage/temp/')) {
+                        var fileName = currentDocUrl.split('/storage/temp/').pop().split('?')[0];
+                        downloadEndpoint = 'https://scalepixel.onrender.com/api/v1/download.php?file=' + encodeURIComponent(fileName);
+                    } else if (currentDocUrl.includes('scalepixel.onrender.com/uploads/')) {
+                        var fileName = currentDocUrl.split('/uploads/').pop().split('?')[0];
+                        downloadEndpoint = 'https://scalepixel.onrender.com/api/v1/download.php?file=' + encodeURIComponent(fileName);
+                    } else {
+                        downloadEndpoint = currentDocUrl;
+                    }
+
+                    var iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = downloadEndpoint;
+                    document.body.appendChild(iframe);
+                    setTimeout(function() {
+                        document.body.removeChild(iframe);
+                        restoreBtn();
+                    }, 2500);
+                });
+        };
+
         window.openDocZoomModal = function(url, title, type) {
             if (!url) return;
             type = type || 'image';
+            currentDocUrl = url;
+            currentDocTitle = title || 'document';
 
             var modal = document.getElementById('serveasyDocZoomModal');
             if (!modal) {
@@ -3512,7 +3586,7 @@ if (!in_array($open_tab, $valid_tabs)) {
                                 '<button type="button" class="btn btn-sm btn-zoom-action" title="Zoom Out" onclick="docZoomAction(\'out\')"><i class="fas fa-search-minus"></i><span class="d-none d-md-inline ml-1">Zoom Out</span></button>' +
                                 '<button type="button" class="btn btn-sm btn-zoom-action" title="Rotate 90°" onclick="docZoomAction(\'rotate\')"><i class="fas fa-redo"></i><span class="d-none d-md-inline ml-1">Rotate</span></button>' +
                                 '<button type="button" class="btn btn-sm btn-zoom-action" title="Fit to Screen" onclick="docZoomAction(\'reset\')"><i class="fas fa-sync-alt"></i><span class="d-none d-md-inline ml-1">Fit</span></button>' +
-                                '<a id="docZoomDownloadBtn" href="#" target="_blank" download class="btn btn-sm btn-zoom-action btn-zoom-download"><i class="fas fa-download"></i><span class="d-none d-md-inline ml-1">Download</span></a>' +
+                                '<button type="button" id="docZoomDownloadBtn" class="btn btn-sm btn-zoom-action btn-zoom-download" title="Download Image Directly" onclick="triggerDirectDownload()"><i class="fas fa-download"></i><span class="d-none d-md-inline ml-1">Download</span></button>' +
                                 '<button type="button" class="btn btn-sm btn-zoom-close" title="Close" onclick="closeDocZoomModal()"><i class="fas fa-times fa-lg"></i></button>' +
                             '</div>' +
                         '</div>' +
@@ -3538,17 +3612,12 @@ if (!in_array($open_tab, $valid_tabs)) {
             var titleEl = document.getElementById('docZoomTitle');
             var imgEl = document.getElementById('docZoomImage');
             var iframeEl = document.getElementById('docZoomPdfIframe');
-            var downloadBtn = document.getElementById('docZoomDownloadBtn');
             var resBadge = document.getElementById('docZoomResBadge');
 
             if (titleEl) titleEl.textContent = title || 'Document Preview';
             if (resBadge) {
                 resBadge.style.display = 'none';
                 resBadge.textContent = '';
-            }
-            if (downloadBtn) {
-                downloadBtn.href = url;
-                downloadBtn.setAttribute('download', (title || 'document').replace(/[^a-z0-9_-]/gi, '_'));
             }
 
             // Reset transforms
@@ -3771,9 +3840,9 @@ if (!in_array($open_tab, $valid_tabs)) {
                 <button type="button" class="btn btn-sm btn-zoom-action" title="Fit to Screen" onclick="docZoomAction('reset')">
                     <i class="fas fa-sync-alt"></i><span class="d-none d-md-inline ml-1">Fit</span>
                 </button>
-                <a id="docZoomDownloadBtn" href="#" target="_blank" download class="btn btn-sm btn-zoom-action btn-zoom-download" title="Open or Download Original">
+                <button type="button" id="docZoomDownloadBtn" class="btn btn-sm btn-zoom-action btn-zoom-download" title="Download Document Directly" onclick="triggerDirectDownload()">
                     <i class="fas fa-download"></i><span class="d-none d-md-inline ml-1">Download</span>
-                </a>
+                </button>
                 <button type="button" class="btn btn-sm btn-zoom-close" title="Close (Esc)" onclick="closeDocZoomModal()">
                     <i class="fas fa-times fa-lg"></i>
                 </button>
