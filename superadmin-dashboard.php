@@ -1526,9 +1526,12 @@ try {
                                                      onclick="openDocZoomModal('<?= htmlspecialchars($frontUrl, ENT_QUOTES) ?>', 'ID Front Photo (<?= htmlspecialchars($idTypeTitle, ENT_QUOTES) ?>)', 'image')"
                                                      title="Click to view fullscreen">
                                                     <img src="<?= htmlspecialchars($frontUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="ID Front Photo"
-                                                         crossorigin="anonymous"
-                                                         onerror="if(!this.dataset.retried){this.dataset.retried='1';var el=this;setTimeout(function(){el.src='<?= htmlspecialchars($frontUrl) ?>'+(el.src.indexOf('?')===-1?'?':'&')+'retry='+Date.now();},1500);}else if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://scalepixel.onrender.com/storage/temp/test_front.jpg';}">
-                                                    
+                                                         onerror="if(!this.dataset.retried){this.dataset.retried='1';var el=this;setTimeout(function(){el.src='<?= htmlspecialchars($frontUrl) ?>'+(el.src.indexOf('?')===-1?'?':'&')+'retry='+Date.now();},1500);}">
+                                                </div>
+                                                <div class="mt-2">
+                                                    <button type="button" class="btn btn-xs btn-outline-info font-weight-bold" style="font-size:0.75rem; border-radius:6px;" onclick="event.stopPropagation(); triggerDirectDownload('<?= htmlspecialchars($frontUrl, ENT_QUOTES) ?>', 'ID_Front_Photo_<?= htmlspecialchars($ver['id_number'], ENT_QUOTES) ?>');">
+                                                        <i class="fas fa-download mr-1"></i> Download
+                                                    </button>
                                                 </div>
                                             <?php else: ?>
                                                 <span class="text-muted small">No photo uploaded</span>
@@ -1541,7 +1544,7 @@ try {
                                 <div class="col-md-3 col-sm-6 text-center mb-3">
                                     <div class="card p-2 shadow-sm border doc-card-container" style="border-radius: 8px; height: 100%;">
                                         <div class="small font-weight-bold text-primary mb-2"><i class="fas fa-id-card mr-1"></i> ID Back Photo</div>
-                                        <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="background:#090d16; min-height: 140px; overflow:hidden; border-radius:6px;">
+                                        <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center" style="background:#090d16; min-height: 140px; overflow:hidden; border-radius:6px; padding: 6px;">
                                             <?php if (!empty($ver['id_back_image'])): 
                                                 $backUrl = resolveDocUrl($ver['id_back_image']);
                                                 $idTypeTitle = strtoupper(str_replace('_', ' ', $ver['id_type'] ?: 'ID'));
@@ -1551,9 +1554,12 @@ try {
                                                      onclick="openDocZoomModal('<?= htmlspecialchars($backUrl, ENT_QUOTES) ?>', 'ID Back Photo (<?= htmlspecialchars($idTypeTitle, ENT_QUOTES) ?>)', 'image')"
                                                      title="Click to view fullscreen">
                                                     <img src="<?= htmlspecialchars($backUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="ID Back Photo"
-                                                         crossorigin="anonymous"
-                                                         onerror="if(!this.dataset.retried){this.dataset.retried='1';var el=this;setTimeout(function(){el.src='<?= htmlspecialchars($backUrl) ?>'+(el.src.indexOf('?')===-1?'?':'&')+'retry='+Date.now();},1500);}else if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://scalepixel.onrender.com/storage/temp/test_back.jpg';}">
-                                                    
+                                                         onerror="if(!this.dataset.retried){this.dataset.retried='1';var el=this;setTimeout(function(){el.src='<?= htmlspecialchars($backUrl) ?>'+(el.src.indexOf('?')===-1?'?':'&')+'retry='+Date.now();},1500);}">
+                                                </div>
+                                                <div class="mt-2">
+                                                    <button type="button" class="btn btn-xs btn-outline-info font-weight-bold" style="font-size:0.75rem; border-radius:6px;" onclick="event.stopPropagation(); triggerDirectDownload('<?= htmlspecialchars($backUrl, ENT_QUOTES) ?>', 'ID_Back_Photo_<?= htmlspecialchars($ver['id_number'], ENT_QUOTES) ?>');">
+                                                        <i class="fas fa-download mr-1"></i> Download
+                                                    </button>
                                                 </div>
                                             <?php else: ?>
                                                 <span class="text-muted small">No photo uploaded</span>
@@ -1566,7 +1572,7 @@ try {
                                 <div class="col-md-3 col-sm-6 text-center mb-3">
                                     <div class="card p-2 shadow-sm border doc-card-container" style="border-radius: 8px; height: 100%;">
                                         <div class="small font-weight-bold text-primary mb-2"><i class="fas fa-camera mr-1"></i> Selfie with ID</div>
-                                        <div class="flex-grow-1 d-flex align-items-center justify-content-center" style="background:#090d16; min-height: 140px; overflow:hidden; border-radius:6px;">
+                                        <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center" style="background:#090d16; min-height: 140px; overflow:hidden; border-radius:6px; padding: 6px;">
                                             <?php if (!empty($ver['selfie_image'])): 
                                                 $selfieUrl = resolveDocUrl($ver['selfie_image']);
                                             ?>
@@ -1575,9 +1581,12 @@ try {
                                                      onclick="openDocZoomModal('<?= htmlspecialchars($selfieUrl, ENT_QUOTES) ?>', 'Selfie with ID / Verification Photo', 'image')"
                                                      title="Click to view fullscreen">
                                                     <img src="<?= htmlspecialchars($selfieUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="Selfie with ID"
-                                                         crossorigin="anonymous"
-                                                         onerror="if(!this.dataset.retried){this.dataset.retried='1';var el=this;setTimeout(function(){el.src='<?= htmlspecialchars($selfieUrl) ?>'+(el.src.indexOf('?')===-1?'?':'&')+'retry='+Date.now();},1500);}else if(!this.dataset.fallback){this.dataset.fallback='1';this.src='https://scalepixel.onrender.com/storage/temp/test_selfie.jpg';}">
-                                                    
+                                                         onerror="if(!this.dataset.retried){this.dataset.retried='1';var el=this;setTimeout(function(){el.src='<?= htmlspecialchars($selfieUrl) ?>'+(el.src.indexOf('?')===-1?'?':'&')+'retry='+Date.now();},1500);}">
+                                                </div>
+                                                <div class="mt-2">
+                                                    <button type="button" class="btn btn-xs btn-outline-info font-weight-bold" style="font-size:0.75rem; border-radius:6px;" onclick="event.stopPropagation(); triggerDirectDownload('<?= htmlspecialchars($selfieUrl, ENT_QUOTES) ?>', 'Selfie_Verification_<?= htmlspecialchars($ver['id_number'], ENT_QUOTES) ?>');">
+                                                        <i class="fas fa-download mr-1"></i> Download
+                                                    </button>
                                                 </div>
                                             <?php else: ?>
                                                 <span class="text-muted small">No photo uploaded</span>
@@ -3498,8 +3507,10 @@ if (!in_array($open_tab, $valid_tabs)) {
             }
         }
 
-        window.triggerDirectDownload = function() {
-            if (!currentDocUrl) return;
+        window.triggerDirectDownload = function(overrideUrl, overrideTitle) {
+            var url = overrideUrl || currentDocUrl;
+            if (!url) return;
+            var title = overrideTitle || currentDocTitle || 'document';
             var btn = document.getElementById('docZoomDownloadBtn');
             var originalHtml = btn ? btn.innerHTML : '';
             if (btn) {
@@ -3507,8 +3518,8 @@ if (!in_array($open_tab, $valid_tabs)) {
                 btn.disabled = true;
             }
 
-            var cleanTitle = (currentDocTitle || 'document').replace(/[^a-zA-Z0-9_-]/g, '_');
-            var ext = currentDocUrl.split('.').pop().split('?')[0].toLowerCase();
+            var cleanTitle = title.replace(/[^a-zA-Z0-9_-]/g, '_');
+            var ext = url.split('.').pop().split('?')[0].toLowerCase();
             if (!['jpg', 'jpeg', 'png', 'webp', 'avif', 'pdf'].includes(ext)) {
                 ext = 'jpg';
             }
@@ -3522,8 +3533,18 @@ if (!in_array($open_tab, $valid_tabs)) {
                 }
             }
 
-            // Strategy 1: Direct in-memory Blob fetch (Zero redirect, 100% direct file download)
-            fetch(currentDocUrl, { mode: 'cors' })
+            // Route through ScalePixel Content-Disposition download endpoint when applicable
+            var directDownloadUrl = url;
+            if (url.includes('scalepixel.onrender.com/storage/temp/')) {
+                var fileName = url.split('/storage/temp/').pop().split('?')[0];
+                directDownloadUrl = 'https://scalepixel.onrender.com/api/v1/download.php?file=' + encodeURIComponent(fileName);
+            } else if (url.includes('scalepixel.onrender.com/uploads/')) {
+                var fileName = url.split('/uploads/').pop().split('?')[0];
+                directDownloadUrl = 'https://scalepixel.onrender.com/api/v1/download.php?file=' + encodeURIComponent(fileName);
+            }
+
+            // Strategy 1: Fetch as Blob with custom filename
+            fetch(directDownloadUrl)
                 .then(function(res) {
                     if (!res.ok) throw new Error('Fetch failed with status ' + res.status);
                     return res.blob();
@@ -3543,28 +3564,19 @@ if (!in_array($open_tab, $valid_tabs)) {
                     }, 500);
                 })
                 .catch(function(err) {
-                    console.warn('[DocZoom] Direct blob fetch error, falling back to ScalePixel download endpoint:', err);
-
-                    // Strategy 2: ScalePixel Content-Disposition attachment endpoint via hidden iframe (No page redirect)
-                    var downloadEndpoint = '';
-                    if (currentDocUrl.includes('scalepixel.onrender.com/storage/temp/')) {
-                        var fileName = currentDocUrl.split('/storage/temp/').pop().split('?')[0];
-                        downloadEndpoint = 'https://scalepixel.onrender.com/api/v1/download.php?file=' + encodeURIComponent(fileName);
-                    } else if (currentDocUrl.includes('scalepixel.onrender.com/uploads/')) {
-                        var fileName = currentDocUrl.split('/uploads/').pop().split('?')[0];
-                        downloadEndpoint = 'https://scalepixel.onrender.com/api/v1/download.php?file=' + encodeURIComponent(fileName);
-                    } else {
-                        downloadEndpoint = currentDocUrl;
-                    }
-
-                    var iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    iframe.src = downloadEndpoint;
-                    document.body.appendChild(iframe);
+                    console.warn('[DocZoom] Direct blob fetch error, falling back to direct anchor download:', err);
+                    // Strategy 2: Direct browser download trigger via anchor
+                    var fallbackLink = document.createElement('a');
+                    fallbackLink.style.display = 'none';
+                    fallbackLink.href = directDownloadUrl;
+                    fallbackLink.setAttribute('download', downloadFileName);
+                    fallbackLink.target = '_blank';
+                    document.body.appendChild(fallbackLink);
+                    fallbackLink.click();
                     setTimeout(function() {
-                        document.body.removeChild(iframe);
+                        document.body.removeChild(fallbackLink);
                         restoreBtn();
-                    }, 2500);
+                    }, 1500);
                 });
         };
 
@@ -3671,12 +3683,8 @@ if (!in_array($open_tab, $valid_tabs)) {
                             setTimeout(function() {
                                 imgEl.src = url + (url.indexOf('?') === -1 ? '?' : '&') + 'retry=' + Date.now();
                             }, 1500);
-                        } else if (!imgEl.dataset.fallback && url.indexOf('scalepixel.onrender.com') !== -1) {
-                            imgEl.dataset.fallback = '1';
-                            var fallbackUrl = 'https://scalepixel.onrender.com/storage/temp/test_front.jpg';
-                            if (url.toLowerCase().indexOf('back') !== -1) fallbackUrl = 'https://scalepixel.onrender.com/storage/temp/test_back.jpg';
-                            else if (url.toLowerCase().indexOf('selfie') !== -1) fallbackUrl = 'https://scalepixel.onrender.com/storage/temp/test_selfie.jpg';
-                            imgEl.src = fallbackUrl;
+                        } else {
+                            console.warn('[DocZoom] Could not load image from URL:', url);
                         }
                     };
                     imgEl.src = url;
