@@ -33,6 +33,15 @@ if ($dbConfigPath) {
 try {
     $pdo = Database::connect();
 
+    // Auto-heal id_verifications schema if verification_id lacks AUTO_INCREMENT / Primary Key
+    try {
+        $chk = $pdo->query("SHOW COLUMNS FROM `id_verifications` WHERE `Field` = 'verification_id'")->fetch(PDO::FETCH_ASSOC);
+        if ($chk && empty($chk['Key'])) {
+            $pdo->exec("UPDATE `id_verifications` SET `verification_id` = 1 WHERE `verification_id` = 0");
+            $pdo->exec("ALTER TABLE `id_verifications` MODIFY COLUMN `verification_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, ADD PRIMARY KEY (`verification_id`)");
+        }
+    } catch (\Throwable $migErr) {}
+
     // Re-fetch fresh data from database to ensure account status is current
     $stmt = $pdo->prepare("SELECT * FROM admin_users WHERE admin_id = ? LIMIT 1");
     $stmt->execute([$active_user['id']]);
@@ -677,7 +686,7 @@ try {
                                     $is_service = ($type === 'service');
                                     
                                     if ($is_verification) {
-                                        $rid = $row['verification_id'];
+                                        $rid = (int)($row['verification_id'] ?? 0);
                                         $name = htmlspecialchars($row['full_name'] ?? 'User');
                                         $contact = htmlspecialchars(($row['phone_number'] ?: '') . ' / ' . ($row['email_address'] ?: ''));
                                         $prim_text = strtoupper(str_replace('_', ' ', $row['id_type'])) . ': ' . $row['id_number'];
@@ -730,7 +739,7 @@ try {
                                         $status = htmlspecialchars($row['status'] ?? 'pending');
                                     }
                                     ?>
-                                    <tr onclick="loadDetail('<?= $type ?>', <?= $rid ?>)">
+                                    <tr <?= ($rid > 0) ? 'onclick="loadDetail(\'' . $type . '\', ' . $rid . ')"' : '' ?> style="<?= ($rid > 0) ? 'cursor:pointer;' : '' ?>">
                                         <td><span class="id-badge">#<?= htmlspecialchars($rid) ?></span></td>
                                         <td>
                                             <div class="d-flex align-items-center">
@@ -779,7 +788,11 @@ try {
  
                                         <td onclick="event.stopPropagation()" style="white-space: nowrap;">
                                             <?php if ($is_verification): ?>
-                                                <button type="button" class="btn btn-outline-emerald btn-sm font-weight-bold" style="border-width:2px;border-radius:6px;" onclick="loadDetail('verification', <?= $rid ?>)">Review</button>
+                                                <?php if ($rid > 0): ?>
+                                                    <button type="button" class="btn btn-outline-emerald btn-sm font-weight-bold" style="border-width:2px;border-radius:6px;" onclick="loadDetail('verification', <?= $rid ?>)">Review</button>
+                                                <?php else: ?>
+                                                    <span class="badge badge-secondary py-1 px-2" style="font-size:0.75rem;">Not Submitted</span>
+                                                <?php endif; ?>
                                             <?php elseif ($is_service): ?>
                                                 <form class="mb-0">
                                                     <input type="hidden" name="toggle_service_id" value="<?= $rid ?>">
@@ -800,7 +813,7 @@ try {
                                                             onclick="event.stopPropagation(); loadProviderServices(<?= $rid ?>)">
                                                             <i class="fas fa-wrench mr-1"></i> Services
                                                         </button>
-                                                    <?php elseif (!empty($row['latest_verification_id'])): ?>
+                                                    <?php elseif (!empty($row['latest_verification_id']) && (int)$row['latest_verification_id'] > 0): ?>
                                                         <button type="button" class="btn btn-outline-primary btn-sm font-weight-bold text-nowrap"
                                                             style="border-width:2px;border-radius:6px; padding: 2px 8px; font-size: 0.75rem; white-space: nowrap;"
                                                             title="Review ID Verification Request #<?= (int)$row['latest_verification_id'] ?>"
@@ -1023,8 +1036,15 @@ try {
 
         $id = (int) ($_GET['id'] ?? 0);
         $edit_mode = isset($_GET['edit_mode']) && $_GET['edit_mode'] === '1';
-        if (!$id) {
-            echo '<p class="text-center text-danger mt-4 py-5">Invalid ID.</p>';
+        if ($id <= 0) {
+            echo '<div class="text-center py-5 my-4">
+                <div class="mb-3 text-warning"><i class="fas fa-exclamation-circle fa-3x"></i></div>
+                <h5 class="text-white font-weight-bold">No Valid Item Selected</h5>
+                <p class="text-muted small">Please select an entry from the list to view full details.</p>
+                <button type="button" class="btn btn-outline-primary btn-sm px-3 mt-2" onclick="loadSection(\'' . htmlspecialchars($type) . '\')">
+                    <i class="fas fa-arrow-left mr-1"></i> Back to ' . htmlspecialchars(ucfirst($type)) . ' List
+                </button>
+            </div>';
             exit();
         }
 
@@ -1039,7 +1059,14 @@ try {
             $stmt->execute([$id]);
             $ver = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$ver) {
-                echo '<p class="text-center text-warning mt-4 py-5">Verification request not found.</p>';
+                echo '<div class="text-center py-5 my-4">
+                    <div class="mb-3 text-warning"><i class="fas fa-search fa-3x"></i></div>
+                    <h5 class="text-white font-weight-bold">Verification Request #' . (int)$id . ' Not Found</h5>
+                    <p class="text-muted small">The requested verification record may have been removed or does not exist.</p>
+                    <button type="button" class="btn btn-outline-primary btn-sm px-3 mt-2" onclick="loadSection(\'verification\')">
+                        <i class="fas fa-arrow-left mr-1"></i> Back to Verification List
+                    </button>
+                </div>';
                 exit();
             }
             $status = $ver['verification_status'];
@@ -1667,7 +1694,7 @@ try {
                                             $v_label = ucfirst(str_replace('_', ' ', $v_status));
                                         ?>
                                             <span class="badge <?= $v_badge ?> px-3 py-1 mr-2"><?= $v_label ?></span>
-                                            <?php if (!empty($ver_info['verification_id'])): ?>
+                                            <?php if (!empty($ver_info['verification_id']) && (int)$ver_info['verification_id'] > 0): ?>
                                                 <button type="button" class="btn btn-outline-emerald btn-xs py-1 px-2 font-weight-bold" style="font-size: 0.75rem; border-radius: 4px; border-width: 1px;" onclick="loadDetail('verification', <?= $ver_info['verification_id'] ?>)">Review Documents</button>
                                             <?php endif; ?>
                                             <?php if ($v_status !== 'approved'): ?>
@@ -2725,16 +2752,18 @@ if (!in_array($open_tab, $valid_tabs)) {
         window.addEventListener('popstate', function (e) {
             var params = new URLSearchParams(window.location.search);
             var tab = params.get('tab') || params.get('type') || (e.state && e.state.tab);
-            var id = params.get('id') || (e.state && e.state.id);
+            var rawId = params.get('id') || (e.state && e.state.id);
+            var id = parseInt(rawId, 10);
+            if (isNaN(id) || id <= 0) id = null;
+
             if (tab === 'dealer_services' && id) {
                 currentSection = '';
                 loadProviderServices(id);
             } else if (tab && validTabs.indexOf(tab) !== -1) {
+                currentSection = '';
                 if (id) {
-                    currentSection = '';
                     loadDetail(tab, id);
                 } else {
-                    currentSection = '';
                     loadSection(tab);
                 }
             } else {
@@ -2748,10 +2777,12 @@ if (!in_array($open_tab, $valid_tabs)) {
         $(document).ready(function () {
             var params = new URLSearchParams(window.location.search);
             var tab = params.get('tab') || params.get('type') || '<?= $open_tab ?>';
-            var id = params.get('id') || '<?= $open_id ? $open_id : "" ?>';
+            var rawId = params.get('id') || '<?= $open_id ? $open_id : "" ?>';
+            var id = parseInt(rawId, 10);
+            if (isNaN(id) || id <= 0) id = null;
 
-            // Clean up any stale query parameters from earlier browser redirects
-            if (params.get('action') === 'save_edit' || params.get('permission_admin_id')) {
+            // Clean up any stale query parameters or invalid id=0 from earlier browser redirects
+            if (params.get('action') === 'save_edit' || params.get('permission_admin_id') || (params.has('id') && !id)) {
                 var cleanUrl = window.location.pathname + (tab ? '?tab=' + tab : '') + (id ? '&id=' + id : '');
                 history.replaceState({ tab: tab, id: id }, '', cleanUrl);
             }
@@ -2759,10 +2790,12 @@ if (!in_array($open_tab, $valid_tabs)) {
             // Fallback to sessionStorage if URL had no parameters
             if (!tab) {
                 var savedTab = sessionStorage.getItem('serveasy_superadmin_tab');
-                var savedId = sessionStorage.getItem('serveasy_superadmin_id');
+                var rawSavedId = sessionStorage.getItem('serveasy_superadmin_id');
+                var savedId = parseInt(rawSavedId, 10);
+                if (isNaN(savedId) || savedId <= 0) savedId = null;
                 if (savedTab && validTabs.indexOf(savedTab) !== -1) {
                     tab = savedTab;
-                    id = savedId || '';
+                    id = savedId;
                     var newUrl = window.location.pathname + '?tab=' + tab + (id ? '&id=' + id : '');
                     history.replaceState({ tab: tab, id: id }, '', newUrl);
                 }
@@ -2783,6 +2816,13 @@ if (!in_array($open_tab, $valid_tabs)) {
 
         // ── Load admin detail view inline (no page redirect) ─────
         function loadDetail(type, id) {
+            var intId = parseInt(id, 10);
+            if (isNaN(intId) || intId <= 0) {
+                console.warn('loadDetail called with invalid id (' + id + '). Redirecting to loadSection.');
+                loadSection(type);
+                return;
+            }
+            id = intId;
             currentSection = type + '_detail';
             $('#list-content').html('');
             $('#list-spinner').show();

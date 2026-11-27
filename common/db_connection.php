@@ -88,6 +88,15 @@ if (!class_exists('Database')) {
                 PDO::ATTR_EMULATE_PREPARES   => false,
             ]);
 
+            // Auto-heal id_verifications schema if verification_id lacks AUTO_INCREMENT / Primary Key
+            try {
+                $chk = self::$pdo->query("SHOW COLUMNS FROM `id_verifications` WHERE `Field` = 'verification_id'")->fetch(PDO::FETCH_ASSOC);
+                if ($chk && empty($chk['Key'])) {
+                    self::$pdo->exec("UPDATE `id_verifications` SET `verification_id` = 1 WHERE `verification_id` = 0");
+                    self::$pdo->exec("ALTER TABLE `id_verifications` MODIFY COLUMN `verification_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, ADD PRIMARY KEY (`verification_id`)");
+                }
+            } catch (\Throwable $migErr) {}
+
             return self::$pdo;
         }
 
