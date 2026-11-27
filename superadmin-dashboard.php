@@ -621,9 +621,14 @@ try {
 .doc-thumb-img {
     transition: transform 0.25s ease, filter 0.25s ease;
     cursor: zoom-in;
+    aspect-ratio: auto !important;
+    object-fit: contain !important;
 }
 
-.doc-preview-wrapper:hover 
+.doc-preview-wrapper:hover .doc-thumb-img {
+    transform: scale(1.06);
+    filter: brightness(1.12);
+}
 
 </style>
         <h1 class="list-heading"><i class="fas <?= $c['icon'] ?> mr-2" style="color: var(--se-accent-blue, #007aff);"></i><?= $c['label'] ?></h1>
@@ -1392,7 +1397,10 @@ try {
 .doc-zoom-content-wrapper img {
     max-width: 90vw;
     max-height: 80vh;
-    object-fit: contain;
+    width: auto !important;
+    height: auto !important;
+    aspect-ratio: auto !important;
+    object-fit: contain !important;
     border-radius: 10px;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
     pointer-events: auto;
@@ -2460,7 +2468,10 @@ if (!in_array($open_tab, $valid_tabs)) {
 .doc-zoom-content-wrapper img {
     max-width: 90vw;
     max-height: 80vh;
-    object-fit: contain;
+    width: auto !important;
+    height: auto !important;
+    aspect-ratio: auto !important;
+    object-fit: contain !important;
     border-radius: 10px;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
     pointer-events: auto;
@@ -3493,19 +3504,21 @@ if (!in_array($open_tab, $valid_tabs)) {
                                 '<span class="mr-2"><i class="fas fa-shield-alt text-emerald"></i></span>' +
                                 '<span id="docZoomTitle" class="doc-zoom-title font-weight-bold text-white">Document Preview</span>' +
                                 '<span id="docZoomScaleBadge" class="badge badge-dark ml-3 px-2 py-1" style="font-size:0.75rem;background:rgba(255,255,255,0.15);">100%</span>' +
+                                '<span id="docZoomResBadge" class="badge badge-info ml-2 px-2 py-1" style="font-size:0.75rem;background:rgba(14,165,233,0.25);border:1px solid rgba(14,165,233,0.4);color:#38bdf8;display:none;"></span>' +
                             '</div>' +
                             '<div class="doc-zoom-actions d-flex align-items-center" style="gap:8px;">' +
+                                '<button type="button" class="btn btn-sm btn-zoom-action" title="100% Native Pixel Size (1:1)" onclick="docZoomAction(\'1to1\')"><i class="fas fa-expand-arrows-alt"></i><span class="d-none d-md-inline ml-1">1:1 Size</span></button>' +
                                 '<button type="button" class="btn btn-sm btn-zoom-action" title="Zoom In" onclick="docZoomAction(\'in\')"><i class="fas fa-search-plus"></i><span class="d-none d-md-inline ml-1">Zoom In</span></button>' +
                                 '<button type="button" class="btn btn-sm btn-zoom-action" title="Zoom Out" onclick="docZoomAction(\'out\')"><i class="fas fa-search-minus"></i><span class="d-none d-md-inline ml-1">Zoom Out</span></button>' +
                                 '<button type="button" class="btn btn-sm btn-zoom-action" title="Rotate 90°" onclick="docZoomAction(\'rotate\')"><i class="fas fa-redo"></i><span class="d-none d-md-inline ml-1">Rotate</span></button>' +
-                                '<button type="button" class="btn btn-sm btn-zoom-action" title="Reset View" onclick="docZoomAction(\'reset\')"><i class="fas fa-sync-alt"></i><span class="d-none d-md-inline ml-1">Reset</span></button>' +
+                                '<button type="button" class="btn btn-sm btn-zoom-action" title="Fit to Screen" onclick="docZoomAction(\'reset\')"><i class="fas fa-sync-alt"></i><span class="d-none d-md-inline ml-1">Fit</span></button>' +
                                 '<a id="docZoomDownloadBtn" href="#" target="_blank" download class="btn btn-sm btn-zoom-action btn-zoom-download"><i class="fas fa-download"></i><span class="d-none d-md-inline ml-1">Download</span></a>' +
                                 '<button type="button" class="btn btn-sm btn-zoom-close" title="Close" onclick="closeDocZoomModal()"><i class="fas fa-times fa-lg"></i></button>' +
                             '</div>' +
                         '</div>' +
                         '<div id="docZoomStage" class="doc-zoom-stage">' +
                             '<div id="docZoomContentWrapper" class="doc-zoom-content-wrapper">' +
-                                '<img id="docZoomImage" src="" alt="Document Zoomed" style="display:none;" draggable="false" />' +
+                                '<img id="docZoomImage" src="" alt="Document Zoomed" style="display:none;width:auto !important;height:auto !important;max-width:90vw;max-height:80vh;object-fit:contain !important;aspect-ratio:auto !important;" draggable="false" />' +
                                 '<iframe id="docZoomPdfIframe" src="" style="display:none;width:90vw;height:80vh;border:none;border-radius:8px;background:#fff;"></iframe>' +
                             '</div>' +
                         '</div>' +
@@ -3526,8 +3539,13 @@ if (!in_array($open_tab, $valid_tabs)) {
             var imgEl = document.getElementById('docZoomImage');
             var iframeEl = document.getElementById('docZoomPdfIframe');
             var downloadBtn = document.getElementById('docZoomDownloadBtn');
+            var resBadge = document.getElementById('docZoomResBadge');
 
             if (titleEl) titleEl.textContent = title || 'Document Preview';
+            if (resBadge) {
+                resBadge.style.display = 'none';
+                resBadge.textContent = '';
+            }
             if (downloadBtn) {
                 downloadBtn.href = url;
                 downloadBtn.setAttribute('download', (title || 'document').replace(/[^a-z0-9_-]/gi, '_'));
@@ -3552,6 +3570,25 @@ if (!in_array($open_tab, $valid_tabs)) {
                     iframeEl.src = '';
                 }
                 if (imgEl) {
+                    imgEl.onload = function() {
+                        var nw = imgEl.naturalWidth;
+                        var nh = imgEl.naturalHeight;
+                        if (nw && nh && resBadge) {
+                            var r = nw / nh;
+                            var ratioLabel = '';
+                            if (Math.abs(r - 0.5) < 0.05) ratioLabel = '1:2 Ratio';
+                            else if (Math.abs(r - 0.45) < 0.05) ratioLabel = '9:20 Ratio';
+                            else if (Math.abs(r - 0.5625) < 0.05) ratioLabel = '9:16 Ratio';
+                            else if (Math.abs(r - 0.75) < 0.05) ratioLabel = '3:4 Ratio';
+                            else if (Math.abs(r - 1.0) < 0.05) ratioLabel = '1:1 Square';
+                            else if (Math.abs(r - 1.333) < 0.05) ratioLabel = '4:3 Ratio';
+                            else if (Math.abs(r - 1.777) < 0.05) ratioLabel = '16:9 Ratio';
+                            else ratioLabel = (r >= 1 ? r.toFixed(1) + ':1' : '1:' + (1/r).toFixed(1)) + ' Ratio';
+
+                            resBadge.textContent = nw + ' × ' + nh + ' px (' + ratioLabel + ')';
+                            resBadge.style.display = 'inline-block';
+                        }
+                    };
                     imgEl.src = url;
                     imgEl.style.display = 'block';
                 }
@@ -3571,6 +3608,11 @@ if (!in_array($open_tab, $valid_tabs)) {
             modal.style.visibility = 'hidden';
             var imgEl = document.getElementById('docZoomImage');
             var iframeEl = document.getElementById('docZoomPdfIframe');
+            var resBadge = document.getElementById('docZoomResBadge');
+            if (resBadge) {
+                resBadge.style.display = 'none';
+                resBadge.textContent = '';
+            }
             if (imgEl) imgEl.src = '';
             if (iframeEl) iframeEl.src = '';
             document.body.style.overflow = '';
@@ -3588,6 +3630,19 @@ if (!in_array($open_tab, $valid_tabs)) {
                 currentDocRotate = 0;
                 currentPanX = 0;
                 currentPanY = 0;
+            } else if (action === '1to1') {
+                var docImg = document.getElementById('docZoomImage');
+                if (docImg && docImg.naturalWidth) {
+                    var displayedWidth = docImg.clientWidth || docImg.offsetWidth;
+                    if (displayedWidth > 0) {
+                        currentDocScale = docImg.naturalWidth / displayedWidth;
+                    } else {
+                        currentDocScale = 1.0;
+                    }
+                    currentPanX = 0;
+                    currentPanY = 0;
+                    currentDocRotate = 0;
+                }
             }
             updateDocZoomTransform();
         };
@@ -3697,9 +3752,13 @@ if (!in_array($open_tab, $valid_tabs)) {
                 <span class="doc-zoom-icon mr-2"><i class="fas fa-shield-alt text-emerald"></i></span>
                 <span id="docZoomTitle" class="doc-zoom-title font-weight-bold text-white">Document Preview</span>
                 <span id="docZoomScaleBadge" class="badge badge-dark ml-3 px-2 py-1" style="font-size:0.75rem; background:rgba(255,255,255,0.15);">100%</span>
+                <span id="docZoomResBadge" class="badge badge-info ml-2 px-2 py-1" style="font-size:0.75rem; background:rgba(14,165,233,0.25); border:1px solid rgba(14,165,233,0.4); color:#38bdf8; display:none;"></span>
             </div>
             
             <div class="doc-zoom-actions d-flex align-items-center" style="gap: 8px;">
+                <button type="button" class="btn btn-sm btn-zoom-action" title="100% Native Pixel Size (1:1)" onclick="docZoomAction('1to1')">
+                    <i class="fas fa-expand-arrows-alt"></i><span class="d-none d-md-inline ml-1">1:1 Size</span>
+                </button>
                 <button type="button" class="btn btn-sm btn-zoom-action" title="Zoom In (Scroll up or click)" onclick="docZoomAction('in')">
                     <i class="fas fa-search-plus"></i><span class="d-none d-md-inline ml-1">Zoom In</span>
                 </button>
@@ -3709,8 +3768,8 @@ if (!in_array($open_tab, $valid_tabs)) {
                 <button type="button" class="btn btn-sm btn-zoom-action" title="Rotate 90° Clockwise" onclick="docZoomAction('rotate')">
                     <i class="fas fa-redo"></i><span class="d-none d-md-inline ml-1">Rotate</span>
                 </button>
-                <button type="button" class="btn btn-sm btn-zoom-action" title="Reset View" onclick="docZoomAction('reset')">
-                    <i class="fas fa-sync-alt"></i><span class="d-none d-md-inline ml-1">Reset</span>
+                <button type="button" class="btn btn-sm btn-zoom-action" title="Fit to Screen" onclick="docZoomAction('reset')">
+                    <i class="fas fa-sync-alt"></i><span class="d-none d-md-inline ml-1">Fit</span>
                 </button>
                 <a id="docZoomDownloadBtn" href="#" target="_blank" download class="btn btn-sm btn-zoom-action btn-zoom-download" title="Open or Download Original">
                     <i class="fas fa-download"></i><span class="d-none d-md-inline ml-1">Download</span>
@@ -3724,7 +3783,7 @@ if (!in_array($open_tab, $valid_tabs)) {
         <!-- Main Viewing Stage -->
         <div id="docZoomStage" class="doc-zoom-stage">
             <div id="docZoomContentWrapper" class="doc-zoom-content-wrapper">
-                <img id="docZoomImage" src="" alt="Document Zoomed" style="display: none;" draggable="false" />
+                <img id="docZoomImage" src="" alt="Document Zoomed" style="display: none; width: auto !important; height: auto !important; max-width: 90vw; max-height: 80vh; object-fit: contain !important; aspect-ratio: auto !important;" draggable="false" />
                 <iframe id="docZoomPdfIframe" src="" style="display: none; width: 90vw; height: 80vh; border: none; border-radius: 8px; background: #fff;"></iframe>
             </div>
         </div>
