@@ -789,27 +789,18 @@ try {
     border-radius: 6px;
     background: #090d16;
     transition: all 0.25s ease;
+    cursor: zoom-in;
 }
 .doc-preview-wrapper:hover .doc-thumb-img {
-    transform: scale(1.08);
+    transform: scale(1.06);
+    filter: brightness(1.12);
 }
 .doc-thumb-img {
-    transition: transform 0.25s ease;
+    transition: transform 0.25s ease, filter 0.25s ease;
+    cursor: zoom-in;
 }
-.doc-hover-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(5, 10, 24, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    backdrop-filter: blur(2px);
-}
-.doc-preview-wrapper:hover .doc-hover-overlay {
-    opacity: 1;
-}
+
+.doc-preview-wrapper:hover 
 
 </style>
         <h1 class="list-heading"><i class="fas <?= $c['icon'] ?> mr-2" style="color: var(--se-accent-blue, #007aff);"></i><?= $c['label'] ?></h1>
@@ -1523,13 +1514,11 @@ try {
                                                 $idTypeTitle = strtoupper(str_replace('_', ' ', $ver['id_type'] ?: 'ID'));
                                             ?>
                                                 <div class="doc-preview-wrapper position-relative w-100 h-100 d-flex align-items-center justify-content-center"
-                                                     style="cursor: pointer; min-height: 140px;"
+                                                     style="cursor: zoom-in; min-height: 140px;"
                                                      onclick="openDocZoomModal('<?= htmlspecialchars($frontUrl, ENT_QUOTES) ?>', 'ID Front Photo (<?= htmlspecialchars($idTypeTitle, ENT_QUOTES) ?>)', 'image')"
-                                                     title="Click to zoom / inspect document">
+                                                     title="Click to view fullscreen">
                                                     <img src="<?= htmlspecialchars($frontUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="ID Front Photo">
-                                                    <div class="doc-hover-overlay">
-                                                        <span class="btn btn-sm btn-primary rounded-pill shadow"><i class="fas fa-search-plus mr-1"></i> Zoom Image</span>
-                                                    </div>
+                                                    
                                                 </div>
                                             <?php else: ?>
                                                 <span class="text-muted small">No photo uploaded</span>
@@ -1548,13 +1537,11 @@ try {
                                                 $idTypeTitle = strtoupper(str_replace('_', ' ', $ver['id_type'] ?: 'ID'));
                                             ?>
                                                 <div class="doc-preview-wrapper position-relative w-100 h-100 d-flex align-items-center justify-content-center"
-                                                     style="cursor: pointer; min-height: 140px;"
+                                                     style="cursor: zoom-in; min-height: 140px;"
                                                      onclick="openDocZoomModal('<?= htmlspecialchars($backUrl, ENT_QUOTES) ?>', 'ID Back Photo (<?= htmlspecialchars($idTypeTitle, ENT_QUOTES) ?>)', 'image')"
-                                                     title="Click to zoom / inspect document">
+                                                     title="Click to view fullscreen">
                                                     <img src="<?= htmlspecialchars($backUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="ID Back Photo">
-                                                    <div class="doc-hover-overlay">
-                                                        <span class="btn btn-sm btn-primary rounded-pill shadow"><i class="fas fa-search-plus mr-1"></i> Zoom Image</span>
-                                                    </div>
+                                                    
                                                 </div>
                                             <?php else: ?>
                                                 <span class="text-muted small">No photo uploaded</span>
@@ -1572,13 +1559,11 @@ try {
                                                 $selfieUrl = resolveDocUrl($ver['selfie_image']);
                                             ?>
                                                 <div class="doc-preview-wrapper position-relative w-100 h-100 d-flex align-items-center justify-content-center"
-                                                     style="cursor: pointer; min-height: 140px;"
+                                                     style="cursor: zoom-in; min-height: 140px;"
                                                      onclick="openDocZoomModal('<?= htmlspecialchars($selfieUrl, ENT_QUOTES) ?>', 'Selfie with ID / Verification Photo', 'image')"
-                                                     title="Click to zoom / inspect selfie">
+                                                     title="Click to view fullscreen">
                                                     <img src="<?= htmlspecialchars($selfieUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="Selfie with ID">
-                                                    <div class="doc-hover-overlay">
-                                                        <span class="btn btn-sm btn-primary rounded-pill shadow"><i class="fas fa-search-plus mr-1"></i> Zoom Image</span>
-                                                    </div>
+                                                    
                                                 </div>
                                             <?php else: ?>
                                                 <span class="text-muted small">No photo uploaded</span>
@@ -1601,7 +1586,7 @@ try {
                                                 $extraTitle = 'Extra Document (' . strtoupper(str_replace('_', ' ', $ver['extra_document_type'] ?: 'Extra ID')) . ')';
                                             ?>
                                                 <div class="doc-preview-wrapper position-relative w-100 h-100 d-flex align-items-center justify-content-center p-2"
-                                                     style="cursor: pointer; min-height: 140px;"
+                                                     style="cursor: zoom-in; min-height: 140px;"
                                                      onclick="openDocZoomModal('<?= htmlspecialchars($extraUrl, ENT_QUOTES) ?>', '<?= htmlspecialchars($extraTitle, ENT_QUOTES) ?>', '<?= $isPdf ? 'pdf' : 'image' ?>')"
                                                      title="Click to view full document">
                                                     <?php if ($isPdf): ?>
@@ -1612,9 +1597,7 @@ try {
                                                         </div>
                                                     <?php else: ?>
                                                         <img src="<?= htmlspecialchars($extraUrl) ?>" class="img-fluid doc-thumb-img" style="max-height: 130px; object-fit: contain;" alt="Extra Document">
-                                                        <div class="doc-hover-overlay">
-                                                            <span class="btn btn-sm btn-info rounded-pill shadow"><i class="fas fa-search-plus mr-1"></i> Zoom Image</span>
-                                                        </div>
+                                                        
                                                     <?php endif; ?>
                                                 </div>
                                             <?php else: ?>
