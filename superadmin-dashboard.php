@@ -126,8 +126,9 @@ try {
         }
 
         // Fetch provider info
-        $p_stmt = $pdo->prepare("SELECT sp.id, sp.full_name, sp.email as email_address, sp.phone as phone_number, sp.is_active, sp.verified_status, sp.created_at, COALESCE(c.company_name, '') as company_name 
+        $p_stmt = $pdo->prepare("SELECT sp.id, COALESCE(pp.full_name, 'Service Provider') AS full_name, sp.email as email_address, sp.phone as phone_number, sp.is_active, sp.verified_status, sp.created_at, COALESCE(c.company_name, '') as company_name 
                                  FROM `serveasy-providers` sp 
+                                 LEFT JOIN `provider_profiles` pp ON pp.provider_id = sp.id 
                                  LEFT JOIN `serveasy-company` c ON c.provider_id = sp.id 
                                  WHERE sp.id = ? LIMIT 1");
         $p_stmt->execute([$provider_id]);
@@ -518,13 +519,13 @@ try {
             $rows = $pdo->query("SELECT * FROM admin_users WHERE role='admin' ORDER BY admin_id DESC")->fetchAll(PDO::FETCH_ASSOC);
         elseif ($type === 'dealer')
             // Service providers live in serveasy-providers
-            $rows = $pdo->query("SELECT sp.id, sp.full_name, sp.email as email_address, sp.phone as phone_number, COALESCE(sp.location_address, (SELECT address FROM `service_providers_address` WHERE provider_id = sp.id ORDER BY is_default DESC, id DESC LIMIT 1), '') as location_address, COALESCE(c.company_name, '') as company_name, sp.is_active, sp.verified_status, sp.created_at, (SELECT verification_id FROM id_verifications WHERE user_id = sp.id ORDER BY verification_id DESC LIMIT 1) as latest_verification_id, (SELECT verification_status FROM id_verifications WHERE user_id = sp.id ORDER BY verification_id DESC LIMIT 1) as latest_verification_status FROM `serveasy-providers` sp LEFT JOIN `serveasy-company` c ON c.provider_id = sp.id ORDER BY sp.id DESC")->fetchAll(PDO::FETCH_ASSOC);
+            $rows = $pdo->query("SELECT sp.id, COALESCE(pp.full_name, 'Service Provider') AS full_name, sp.email as email_address, sp.phone as phone_number, COALESCE(sp.location_address, (SELECT address FROM `service_providers_address` WHERE provider_id = sp.id ORDER BY is_default DESC, id DESC LIMIT 1), '') as location_address, COALESCE(c.company_name, '') as company_name, sp.is_active, sp.verified_status, sp.created_at, (SELECT verification_id FROM id_verifications WHERE user_id = sp.id ORDER BY verification_id DESC LIMIT 1) as latest_verification_id, (SELECT verification_status FROM id_verifications WHERE user_id = sp.id ORDER BY verification_id DESC LIMIT 1) as latest_verification_status FROM `serveasy-providers` sp LEFT JOIN `provider_profiles` pp ON pp.provider_id = sp.id LEFT JOIN `serveasy-company` c ON c.provider_id = sp.id ORDER BY sp.id DESC")->fetchAll(PDO::FETCH_ASSOC);
         elseif ($type === 'user')
             $rows = $pdo->query("SELECT * FROM site_user ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
         elseif ($type === 'verification')
-            $rows = $pdo->query("SELECT iv.*, COALESCE(sp.full_name, su.full_name) as full_name, COALESCE(sp.email, su.email_address) as email_address, COALESCE(sp.phone, su.phone_number) as phone_number, IF(sp.id IS NOT NULL, 'provider', 'user') as user_role FROM id_verifications iv LEFT JOIN site_user su ON iv.user_id = su.id LEFT JOIN `serveasy-providers` sp ON iv.user_id = sp.id WHERE (sp.id IS NOT NULL OR su.id IS NOT NULL) ORDER BY iv.verification_id DESC")->fetchAll(PDO::FETCH_ASSOC);
+            $rows = $pdo->query("SELECT iv.*, COALESCE(pp.full_name, su.full_name, 'Service Provider') as full_name, COALESCE(sp.email, su.email_address) as email_address, COALESCE(sp.phone, su.phone_number) as phone_number, IF(sp.id IS NOT NULL, 'provider', 'user') as user_role FROM id_verifications iv LEFT JOIN site_user su ON iv.user_id = su.id LEFT JOIN `serveasy-providers` sp ON iv.user_id = sp.id LEFT JOIN `provider_profiles` pp ON pp.provider_id = sp.id WHERE (sp.id IS NOT NULL OR su.id IS NOT NULL) ORDER BY iv.verification_id DESC")->fetchAll(PDO::FETCH_ASSOC);
         elseif ($type === 'service')
-            $rows = $pdo->query("SELECT s.*, COALESCE(c.company_name, p.full_name, '') as business_name, p.email as email_address, sub.name as subcategory_name FROM `serveasy-services` s JOIN `serveasy-providers` p ON s.provider_id = p.id LEFT JOIN `serveasy-company` c ON c.provider_id = p.id LEFT JOIN `serveasy-subcategories` sub ON s.subcategory_id = sub.id ORDER BY s.id DESC")->fetchAll(PDO::FETCH_ASSOC);
+            $rows = $pdo->query("SELECT s.*, COALESCE(c.company_name, pp.full_name, '') as business_name, p.email as email_address, sub.name as subcategory_name FROM `serveasy-services` s JOIN `serveasy-providers` p ON s.provider_id = p.id LEFT JOIN `provider_profiles` pp ON pp.provider_id = p.id LEFT JOIN `serveasy-company` c ON c.provider_id = p.id LEFT JOIN `serveasy-subcategories` sub ON s.subcategory_id = sub.id ORDER BY s.id DESC")->fetchAll(PDO::FETCH_ASSOC);
 
         $config = [
             'admin' => ['label' => 'Admins', 'icon' => 'fa-user-shield', 'id_col' => 'admin_id'],
@@ -1034,7 +1035,7 @@ try {
         $ver_info = null;
 
         if ($is_verification) {
-            $stmt = $pdo->prepare("SELECT v.*, COALESCE(sp.full_name, u.full_name) as full_name, COALESCE(sp.email, u.email_address) as email_address, COALESCE(sp.phone, u.phone_number) as phone_number, IF(sp.id IS NOT NULL, 'Service Provider', 'User') as user_role, a.username as approved_by_name FROM id_verifications v LEFT JOIN site_user u ON v.user_id = u.id LEFT JOIN `serveasy-providers` sp ON v.user_id = sp.id LEFT JOIN admin_users a ON v.verified_by = a.admin_id WHERE v.verification_id = ?");
+            $stmt = $pdo->prepare("SELECT v.*, COALESCE(pp.full_name, u.full_name, 'Service Provider') as full_name, COALESCE(sp.email, u.email_address) as email_address, COALESCE(sp.phone, u.phone_number) as phone_number, IF(sp.id IS NOT NULL, 'Service Provider', 'User') as user_role, a.username as approved_by_name FROM id_verifications v LEFT JOIN site_user u ON v.user_id = u.id LEFT JOIN `serveasy-providers` sp ON v.user_id = sp.id LEFT JOIN `provider_profiles` pp ON pp.provider_id = sp.id LEFT JOIN admin_users a ON v.verified_by = a.admin_id WHERE v.verification_id = ?");
             $stmt->execute([$id]);
             $ver = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$ver) {
@@ -1046,7 +1047,7 @@ try {
             $role = $ver['user_role'] ?? 'User';
             $name = htmlspecialchars($ver['full_name'] ?? $ver['email_address'] ?? $ver['phone_number'] ?? 'User');
         } elseif ($is_dealer) {
-            $stmt = $pdo->prepare("SELECT sp.*, sp.email as email_address, sp.phone as phone_number, COALESCE(c.company_name, '') as company_name FROM `serveasy-providers` sp LEFT JOIN `serveasy-company` c ON c.provider_id = sp.id WHERE sp.id = ? LIMIT 1");
+            $stmt = $pdo->prepare("SELECT sp.*, COALESCE(pp.full_name, 'Service Provider') AS full_name, sp.email as email_address, sp.phone as phone_number, COALESCE(c.company_name, '') as company_name FROM `serveasy-providers` sp LEFT JOIN `provider_profiles` pp ON pp.provider_id = sp.id LEFT JOIN `serveasy-company` c ON c.provider_id = sp.id WHERE sp.id = ? LIMIT 1");
             $stmt->execute([$id]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$user) {
@@ -1069,7 +1070,7 @@ try {
                 $ver_info = ['verification_status' => $user['verified_status'] ?? 'pending', 'verification_id' => 0];
             }
         } elseif ($is_service) {
-            $stmt = $pdo->prepare("SELECT s.*, COALESCE(c.company_name, p.full_name, '') as business_name, p.email as email_address, sub.name as subcategory_name FROM `serveasy-services` s JOIN `serveasy-providers` p ON s.provider_id = p.id LEFT JOIN `serveasy-company` c ON c.provider_id = p.id LEFT JOIN `serveasy-subcategories` sub ON s.subcategory_id = sub.id WHERE s.id = ? LIMIT 1");
+            $stmt = $pdo->prepare("SELECT s.*, COALESCE(c.company_name, pp.full_name, '') as business_name, p.email as email_address, sub.name as subcategory_name FROM `serveasy-services` s JOIN `serveasy-providers` p ON s.provider_id = p.id LEFT JOIN `provider_profiles` pp ON pp.provider_id = p.id LEFT JOIN `serveasy-company` c ON c.provider_id = p.id LEFT JOIN `serveasy-subcategories` sub ON s.subcategory_id = sub.id WHERE s.id = ? LIMIT 1");
             $stmt->execute([$id]);
             $service = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$service) {
