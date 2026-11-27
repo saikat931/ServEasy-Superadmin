@@ -617,184 +617,7 @@ try {
             }
         
 
-/* ================= SERVEASY DOCUMENT ZOOM LIGHTBOX MODAL ================= */
-.doc-zoom-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 9999999;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.25s ease, visibility 0.25s ease;
-    user-select: none;
-}
-.doc-zoom-modal.active {
-    display: flex !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-.doc-zoom-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(5, 10, 24, 0.94);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    cursor: zoom-out;
-}
-.doc-zoom-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    pointer-events: none;
-    z-index: 2;
-}
-.doc-zoom-header,
-.doc-zoom-footer {
-    pointer-events: auto;
-}
-.doc-zoom-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 24px;
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-}
-.doc-zoom-title-area {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.doc-zoom-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #f8fafc;
-    letter-spacing: 0.3px;
-}
-.doc-zoom-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-.btn-zoom-action {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    color: #e2e8f0;
-    border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.18s ease;
-    cursor: pointer;
-}
-.btn-zoom-action:hover {
-    background: rgba(5, 194, 121, 0.22);
-    border-color: #05c279;
-    color: #ffffff;
-    transform: translateY(-1px);
-}
-.btn-zoom-download {
-    background: rgba(5, 194, 121, 0.15);
-    border-color: rgba(5, 194, 121, 0.4);
-    color: #05c279;
-}
-.btn-zoom-download:hover {
-    background: #05c279;
-    color: #000;
-}
-.btn-zoom-close {
-    background: rgba(239, 68, 68, 0.15);
-    border: 1px solid rgba(239, 68, 68, 0.4);
-    color: #f87171;
-    border-radius: 8px;
-    padding: 6px 14px;
-    margin-left: 8px;
-    transition: all 0.18s ease;
-    cursor: pointer;
-}
-.btn-zoom-close:hover {
-    background: #ef4444;
-    color: #ffffff;
-    transform: scale(1.05);
-}
-.doc-zoom-stage {
-    flex: 1;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: auto;
-    cursor: grab;
-    position: relative;
-}
-.doc-zoom-stage.panning {
-    cursor: grabbing;
-}
-.doc-zoom-content-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform-origin: center center;
-    transition: transform 0.08s ease-out;
-    will-change: transform;
-}
-.doc-zoom-content-wrapper img {
-    max-width: 90vw;
-    max-height: 80vh;
-    object-fit: contain;
-    border-radius: 10px;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
-    pointer-events: auto;
-    transition: filter 0.2s ease;
-}
-.doc-zoom-footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 20px;
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    font-size: 0.8rem;
-    color: #94a3b8;
-}
 
-/* Document Thumbnail Cards in Verifications Detail */
-.doc-card-container {
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    background: #0f172a !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-.doc-card-container:hover {
-    border-color: #05c279 !important;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(5, 194, 121, 0.2) !important;
-}
-.doc-preview-wrapper {
-    overflow: hidden;
-    border-radius: 6px;
-    background: #090d16;
-    transition: all 0.25s ease;
-    cursor: zoom-in;
-}
-.doc-preview-wrapper:hover .doc-thumb-img {
-    transform: scale(1.06);
-    filter: brightness(1.12);
-}
 .doc-thumb-img {
     transition: transform 0.25s ease, filter 0.25s ease;
     cursor: zoom-in;
@@ -1439,7 +1262,184 @@ try {
                 </div>
                 
                 <div class="col-lg-8 mb-4">
-                    <div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
+                    <style>
+
+/* ================= SERVEASY DOCUMENT ZOOM LIGHTBOX MODAL ================= */
+.doc-zoom-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 99999999 !important;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    user-select: none;
+}
+.doc-zoom-modal.active {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+.doc-zoom-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 10, 24, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    cursor: zoom-out;
+}
+.doc-zoom-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    pointer-events: none;
+    z-index: 2;
+}
+.doc-zoom-header,
+.doc-zoom-footer {
+    pointer-events: auto;
+}
+.doc-zoom-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.doc-zoom-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f8fafc;
+    letter-spacing: 0.3px;
+}
+.btn-zoom-action {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.18s ease;
+    cursor: pointer;
+}
+.btn-zoom-action:hover {
+    background: rgba(5, 194, 121, 0.22);
+    border-color: #05c279;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+.btn-zoom-download {
+    background: rgba(5, 194, 121, 0.15);
+    border-color: rgba(5, 194, 121, 0.4);
+    color: #05c279;
+}
+.btn-zoom-download:hover {
+    background: #05c279;
+    color: #000;
+}
+.btn-zoom-close {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #f87171;
+    border-radius: 8px;
+    padding: 6px 14px;
+    margin-left: 8px;
+    transition: all 0.18s ease;
+    cursor: pointer;
+}
+.btn-zoom-close:hover {
+    background: #ef4444;
+    color: #ffffff;
+    transform: scale(1.05);
+}
+.doc-zoom-stage {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    cursor: grab;
+    position: relative;
+}
+.doc-zoom-stage.panning {
+    cursor: grabbing;
+}
+.doc-zoom-content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center center;
+    transition: transform 0.08s ease-out;
+    will-change: transform;
+}
+.doc-zoom-content-wrapper img {
+    max-width: 90vw;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+    pointer-events: auto;
+    cursor: zoom-in;
+    transition: filter 0.2s ease;
+}
+.doc-zoom-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+/* Document Thumbnail Cards in Verifications Detail */
+.doc-card-container {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+.doc-card-container:hover {
+    border-color: #05c279 !important;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(5, 194, 121, 0.2) !important;
+}
+.doc-preview-wrapper {
+    overflow: hidden;
+    border-radius: 6px;
+    background: #090d16;
+    transition: all 0.25s ease;
+    cursor: zoom-in;
+}
+.doc-preview-wrapper:hover .doc-thumb-img {
+    transform: scale(1.06);
+    filter: brightness(1.12);
+}
+.doc-thumb-img {
+    transition: transform 0.25s ease, filter 0.25s ease;
+    cursor: zoom-in;
+}
+
+</style>
+<div class="card shadow-sm border-0 mb-4" style="border-radius: 12px;">
                         <div class="card-header bg-white border-bottom-0" style="padding: 30px 30px 10px 30px;">
                             <h6 class="m-0 font-weight-bold text-emerald" style="font-size: 1.1rem;">Verification Information</h6>
                         </div>
@@ -2330,7 +2330,183 @@ if (!in_array($open_tab, $valid_tabs)) {
                 transform: translateY(0)
             }
         }
-    </style>
+    
+
+/* ================= SERVEASY DOCUMENT ZOOM LIGHTBOX MODAL ================= */
+.doc-zoom-modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 99999999 !important;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    user-select: none;
+}
+.doc-zoom-modal.active {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+.doc-zoom-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 10, 24, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    cursor: zoom-out;
+}
+.doc-zoom-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    pointer-events: none;
+    z-index: 2;
+}
+.doc-zoom-header,
+.doc-zoom-footer {
+    pointer-events: auto;
+}
+.doc-zoom-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.doc-zoom-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f8fafc;
+    letter-spacing: 0.3px;
+}
+.btn-zoom-action {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.18s ease;
+    cursor: pointer;
+}
+.btn-zoom-action:hover {
+    background: rgba(5, 194, 121, 0.22);
+    border-color: #05c279;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+.btn-zoom-download {
+    background: rgba(5, 194, 121, 0.15);
+    border-color: rgba(5, 194, 121, 0.4);
+    color: #05c279;
+}
+.btn-zoom-download:hover {
+    background: #05c279;
+    color: #000;
+}
+.btn-zoom-close {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #f87171;
+    border-radius: 8px;
+    padding: 6px 14px;
+    margin-left: 8px;
+    transition: all 0.18s ease;
+    cursor: pointer;
+}
+.btn-zoom-close:hover {
+    background: #ef4444;
+    color: #ffffff;
+    transform: scale(1.05);
+}
+.doc-zoom-stage {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    cursor: grab;
+    position: relative;
+}
+.doc-zoom-stage.panning {
+    cursor: grabbing;
+}
+.doc-zoom-content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center center;
+    transition: transform 0.08s ease-out;
+    will-change: transform;
+}
+.doc-zoom-content-wrapper img {
+    max-width: 90vw;
+    max-height: 80vh;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+    pointer-events: auto;
+    cursor: zoom-in;
+    transition: filter 0.2s ease;
+}
+.doc-zoom-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+/* Document Thumbnail Cards in Verifications Detail */
+.doc-card-container {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+.doc-card-container:hover {
+    border-color: #05c279 !important;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(5, 194, 121, 0.2) !important;
+}
+.doc-preview-wrapper {
+    overflow: hidden;
+    border-radius: 6px;
+    background: #090d16;
+    transition: all 0.25s ease;
+    cursor: zoom-in;
+}
+.doc-preview-wrapper:hover .doc-thumb-img {
+    transform: scale(1.06);
+    filter: brightness(1.12);
+}
+.doc-thumb-img {
+    transition: transform 0.25s ease, filter 0.25s ease;
+    cursor: zoom-in;
+}
+
+</style>
 </head>
 
 <body id="page-top">
@@ -3309,8 +3485,41 @@ if (!in_array($open_tab, $valid_tabs)) {
 
             var modal = document.getElementById('serveasyDocZoomModal');
             if (!modal) {
-                console.warn('serveasyDocZoomModal element missing, skipping modal');
-                return;
+                var modalHtml = '<div id="serveasyDocZoomModal" class="doc-zoom-modal" tabindex="-1" role="dialog" aria-hidden="true">' +
+                    '<div class="doc-zoom-backdrop" onclick="closeDocZoomModal()"></div>' +
+                    '<div class="doc-zoom-container">' +
+                        '<div class="doc-zoom-header">' +
+                            '<div class="doc-zoom-title-area d-flex align-items-center">' +
+                                '<span class="mr-2"><i class="fas fa-shield-alt text-emerald"></i></span>' +
+                                '<span id="docZoomTitle" class="doc-zoom-title font-weight-bold text-white">Document Preview</span>' +
+                                '<span id="docZoomScaleBadge" class="badge badge-dark ml-3 px-2 py-1" style="font-size:0.75rem;background:rgba(255,255,255,0.15);">100%</span>' +
+                            '</div>' +
+                            '<div class="doc-zoom-actions d-flex align-items-center" style="gap:8px;">' +
+                                '<button type="button" class="btn btn-sm btn-zoom-action" title="Zoom In" onclick="docZoomAction(\'in\')"><i class="fas fa-search-plus"></i><span class="d-none d-md-inline ml-1">Zoom In</span></button>' +
+                                '<button type="button" class="btn btn-sm btn-zoom-action" title="Zoom Out" onclick="docZoomAction(\'out\')"><i class="fas fa-search-minus"></i><span class="d-none d-md-inline ml-1">Zoom Out</span></button>' +
+                                '<button type="button" class="btn btn-sm btn-zoom-action" title="Rotate 90°" onclick="docZoomAction(\'rotate\')"><i class="fas fa-redo"></i><span class="d-none d-md-inline ml-1">Rotate</span></button>' +
+                                '<button type="button" class="btn btn-sm btn-zoom-action" title="Reset View" onclick="docZoomAction(\'reset\')"><i class="fas fa-sync-alt"></i><span class="d-none d-md-inline ml-1">Reset</span></button>' +
+                                '<a id="docZoomDownloadBtn" href="#" target="_blank" download class="btn btn-sm btn-zoom-action btn-zoom-download"><i class="fas fa-download"></i><span class="d-none d-md-inline ml-1">Download</span></a>' +
+                                '<button type="button" class="btn btn-sm btn-zoom-close" title="Close" onclick="closeDocZoomModal()"><i class="fas fa-times fa-lg"></i></button>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div id="docZoomStage" class="doc-zoom-stage">' +
+                            '<div id="docZoomContentWrapper" class="doc-zoom-content-wrapper">' +
+                                '<img id="docZoomImage" src="" alt="Document Zoomed" style="display:none;" draggable="false" />' +
+                                '<iframe id="docZoomPdfIframe" src="" style="display:none;width:90vw;height:80vh;border:none;border-radius:8px;background:#fff;"></iframe>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="doc-zoom-footer">' +
+                            '<span><i class="fas fa-mouse mr-1"></i> Scroll to Zoom</span><span class="mx-2">•</span>' +
+                            '<span><i class="fas fa-hand-paper mr-1"></i> Drag to Pan</span><span class="mx-2">•</span>' +
+                            '<span>Double-Click to Toggle 2x</span><span class="mx-2">•</span>' +
+                            '<span>Press <kbd style="background:rgba(255,255,255,0.2);color:#fff;padding:1px 5px;border-radius:3px;">ESC</kbd> to Close</span>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                modal = document.getElementById('serveasyDocZoomModal');
+                attachDocZoomListeners();
             }
 
             var titleEl = document.getElementById('docZoomTitle');
@@ -3348,8 +3557,8 @@ if (!in_array($open_tab, $valid_tabs)) {
                 }
             }
 
-            modal.style.display = 'flex';
-            setTimeout(function() { modal.classList.add('active'); }, 10);
+            modal.style.cssText = 'position:fixed !important; top:0 !important; left:0 !important; width:100vw !important; height:100vh !important; z-index:99999999 !important; display:flex !important; opacity:1 !important; visibility:visible !important; flex-direction:column; align-items:center; justify-content:center;';
+            modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         };
 
@@ -3357,14 +3566,14 @@ if (!in_array($open_tab, $valid_tabs)) {
             var modal = document.getElementById('serveasyDocZoomModal');
             if (!modal) return;
             modal.classList.remove('active');
-            setTimeout(function() {
-                modal.style.display = 'none';
-                var imgEl = document.getElementById('docZoomImage');
-                var iframeEl = document.getElementById('docZoomPdfIframe');
-                if (imgEl) imgEl.src = '';
-                if (iframeEl) iframeEl.src = '';
-                document.body.style.overflow = '';
-            }, 250);
+            modal.style.display = 'none';
+            modal.style.opacity = '0';
+            modal.style.visibility = 'hidden';
+            var imgEl = document.getElementById('docZoomImage');
+            var iframeEl = document.getElementById('docZoomPdfIframe');
+            if (imgEl) imgEl.src = '';
+            if (iframeEl) iframeEl.src = '';
+            document.body.style.overflow = '';
         };
 
         window.docZoomAction = function(action) {
@@ -3385,7 +3594,8 @@ if (!in_array($open_tab, $valid_tabs)) {
 
         function attachDocZoomListeners() {
             var stage = document.getElementById('docZoomStage');
-            if (!stage) return;
+            if (!stage || stage._hasZoomListeners) return;
+            stage._hasZoomListeners = true;
 
             // Mouse wheel to zoom
             stage.addEventListener('wheel', function(e) {
@@ -3409,6 +3619,24 @@ if (!in_array($open_tab, $valid_tabs)) {
                 }
                 updateDocZoomTransform();
             });
+
+            // Single click on zoomed image toggles cursor between zoom-in and grab
+            var docImg = document.getElementById('docZoomImage');
+            if (docImg) {
+                docImg.addEventListener('click', function(e) {
+                    if (isDocPanning) return;
+                    if (currentDocScale === 1.0) {
+                        currentDocScale = 1.8;
+                    } else if (currentDocScale < 3.0) {
+                        currentDocScale = 3.0;
+                    } else {
+                        currentDocScale = 1.0;
+                        currentPanX = 0;
+                        currentPanY = 0;
+                    }
+                    updateDocZoomTransform();
+                });
+            }
 
             // Mouse drag to pan
             stage.addEventListener('mousedown', function(e) {
@@ -3437,7 +3665,7 @@ if (!in_array($open_tab, $valid_tabs)) {
             // Keyboard shortcuts
             window.addEventListener('keydown', function(e) {
                 var modal = document.getElementById('serveasyDocZoomModal');
-                if (!modal || !modal.classList.contains('active')) return;
+                if (!modal || (!modal.classList.contains('active') && modal.style.display !== 'flex')) return;
                 if (e.key === 'Escape') {
                     closeDocZoomModal();
                 } else if (e.key === '+' || e.key === '=') {
@@ -3455,7 +3683,6 @@ if (!in_array($open_tab, $valid_tabs)) {
         $(document).ready(function() {
             attachDocZoomListeners();
         });
-
 </script>
 
 
